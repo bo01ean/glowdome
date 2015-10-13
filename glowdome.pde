@@ -32,8 +32,6 @@
  4: kinect point cloud
  5: sphere
  6: kinect
- 
- 
  */
 
 
@@ -99,8 +97,8 @@ void draw()  {
     float speedIncrement = 1;
   
   if (keyPressed) {
-    println(keyPressed);
-        println(key);
+    //println(keyPressed);
+        //println(key);
         println(sketch.xSpeed);
         println(sketch.ySpeed);
     switch(key) {
