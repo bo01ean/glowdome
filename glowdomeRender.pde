@@ -170,8 +170,11 @@ class GlowdomeRender {
      *   Create an array of image file names
      */
     private void loadImages() {
-        String path = dataPath(""); 
+        //String path = dataPath("") + "/data/"; 
+        //println(Arrays.asList(imageFiles));
+        String path = sketchPath+"/data/"; 
         imageFiles = listFiles(path);
+
     }
 
     public File[] listFiles(String dir) {
@@ -197,8 +200,8 @@ class GlowdomeRender {
             currentImageNum = imageFiles.length - 1;
         }
         
+        println(imageFiles[currentImageNum]);        
         sourceImage = loadImage(imageFiles[currentImageNum].getAbsolutePath());
-        println(imageFiles[currentImageNum]);
     }
 
     public void loadMovie(PApplet sketch) {
