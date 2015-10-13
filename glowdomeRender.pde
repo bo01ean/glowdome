@@ -101,14 +101,31 @@ class GlowdomeRender {
         registry = new DeviceRegistry();
         testObserver = new TestObserver();
         registry.addObserver(testObserver);
-
+        
+        /*
+         However, if you’re on a very slow network, like a very long wireless link or a cellular modem,
+         you might want to add an extra slowdown.  That’s what the registry.setExtraDelay() method is for.
+        */
+        //registry.setExtraDelay(1000);
+        /*
+        If you’re using video source material and everything looks washed out, you may want to apply the antilog curve correction.  
+        */
+        registry.setAntiLog(true);
+        
+        
+        /*
+        If you’re on a network with a high error rate, like some wireless networks, or poorly installed ethernet, 
+        you might find that you get persistently high error rates and the update frequency drops uncontrollably.
+        In this case, you may want to disable the autothrottling entirely.         
+        */
+        registry.setAutoThrottle(false);
 
         registry.startPushing();
-        registry.setAutoThrottle(true);
+
 
         backgroundImage = createImage(width, height, RGB);
         kinectImage = createImage(kw, kh, RGB);
-        sourceImage = loadImage("mountain2.png");
+        sourceImage = loadImage("had001.png");
 
         offscreenBuffer = createGraphics(width, height, JAVA2D);
 
@@ -152,11 +169,12 @@ class GlowdomeRender {
      *   Create an array of image file names
      */
     private void loadImages() {
-        String path = sketchPath+"/data/"; 
+        String path = dataPath(""); 
         imageFiles = listFiles(path);
     }
 
     public File[] listFiles(String dir) {
+      println(dir);
      File file = new File(dir);
      if (file.isDirectory()) {
        File[] files = file.listFiles();
@@ -167,12 +185,17 @@ class GlowdomeRender {
      }
     }
 
-    public void cycleImage() {
-        currentImageNum++;
+    public void cycleImage(Integer dir) {
+        currentImageNum+=dir;
 
         if (currentImageNum > imageFiles.length - 1) {
             currentImageNum = 0;
         }
+        
+        if (currentImageNum < 0) {
+            currentImageNum = imageFiles.length - 1;
+        }
+        
         sourceImage = loadImage(imageFiles[currentImageNum].getAbsolutePath());
         println(imageFiles[currentImageNum]);
     }
@@ -291,7 +314,7 @@ class GlowdomeRender {
         int curMillis = millis();
         
         if (autoCycle && curMillis - cycleMillis > 1000) {
-            cycleImage();
+            cycleImage(1);
             cycleMillis = curMillis; 
         }
 
@@ -338,7 +361,6 @@ class GlowdomeRender {
 
         colorMode(RGB, 255);
     }
-
 
     /**
      * Render a test pattern
@@ -600,7 +622,7 @@ class GlowdomeRender {
                     int stripLength = strip.getLength();
                     int xscale = width / stripLength;
                     yscale = height / stripLength;
-
+                    //println(stripNum);
                     for (int stripY = 0; stripY < stripLength; stripY++) {
 c  = 0;
                         // interlace the pixel between the strips
@@ -613,6 +635,7 @@ c  = 0;
                             //c = offscreenBuffer.pixels[(int)imageTrace + ((int)(stripY*yscale) + 1)*width];
                             //println(stripY*yscale*width);
                         }
+                        //print(c);
 
                         strip.setPixel(c, stripLength - stripY);
                     }
@@ -729,4 +752,3 @@ c  = 0;
         return average;
     }
 }
-
