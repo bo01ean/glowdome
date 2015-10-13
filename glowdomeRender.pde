@@ -56,6 +56,7 @@ class GlowdomeRender {
     float traceSpeed = 1;  // how many pixels to skip each frame, adjust for motor speed
 
     int stripeWidth = 10;
+    int slideshowDelay = 15000;
 
     int saturationAdjust = 0;
     int hueShift;
@@ -313,8 +314,10 @@ class GlowdomeRender {
 
         int curMillis = millis();
         
-        if (autoCycle && curMillis - cycleMillis > 1000) {
-            cycleImage(1);
+//        if (autoCycle && curMillis - cycleMillis > 1000) {
+//            cycleImage(1);
+        if (curMillis - cycleMillis > slideshowDelay) {
+           cycleImage(1);
             cycleMillis = curMillis; 
         }
 
@@ -637,6 +640,7 @@ c  = 0;
                         }
                         //print(c);
 
+//                        Thread.sleep(1000);
                         strip.setPixel(c, stripLength - stripY);
                     }
                     stripNum++;

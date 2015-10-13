@@ -94,10 +94,10 @@ void setup() {
     Main draw function pass to sketch object for the actual rendering.
  Handle key presses when we need to detect which keys are held down.
  */
-void draw() {
+void draw()  {
 
-  float speedIncrement = 1;
-
+    float speedIncrement = 1;
+  
   if (keyPressed) {
     println(keyPressed);
         println(key);
