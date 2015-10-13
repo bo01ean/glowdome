@@ -200,8 +200,14 @@ class GlowdomeRender {
             currentImageNum = imageFiles.length - 1;
         }
         
-        println(imageFiles[currentImageNum]);        
-        sourceImage = loadImage(imageFiles[currentImageNum].getAbsolutePath());
+        println(imageFiles[currentImageNum]);
+        File file = new File(imageFiles[currentImageNum]);
+        
+        if(!file.isDirectory()) {
+            sourceImage = loadImage(imageFiles[currentImageNum].getAbsolutePath());            
+        } else { 
+            cycleImage(2 * dir);
+        }       
     }
 
     public void loadMovie(PApplet sketch) {
