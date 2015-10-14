@@ -32,8 +32,6 @@
  4: kinect point cloud
  5: sphere
  6: kinect
- 
- 
  */
 
 
@@ -55,6 +53,8 @@ int lf = 10;    // Linefeed in ASCII
 
 Kinect kinect;
 
+float speedIncrement = 1;
+
 DeviceRegistry registry;
 
 GlowdomeRender sketch;
@@ -63,6 +63,14 @@ Serial rpmReader;
 
 boolean useKinect = false;
 boolean useLeap = true;
+
+boolean interlaceColumns = false;
+
+int numStripsOverride = 1;
+float RPS = 5;//60 FPS
+float frameRateVal = RPS * 60;
+int last = 0;
+float incFactor = 3;
 
 class TestObserver implements Observer {
   public boolean hasStrips = false;
@@ -77,8 +85,10 @@ class TestObserver implements Observer {
 
 
 void setup() {
-  size(360, 360, P3D);
-  frameRate(100);
+  int stripsHeight = 360;
+  
+  size(stripsHeight/5, stripsHeight, P3D);
+  frameRate(frameRateVal);
 
   sketch = new GlowdomeRender(this, useKinect, useLeap);
   sketch.setup();
@@ -96,11 +106,9 @@ void setup() {
  */
 void draw()  {
 
-    float speedIncrement = 1;
-  
   if (keyPressed) {
-    println(keyPressed);
-        println(key);
+    //println(keyPressed);
+        //println(key);
         println(sketch.xSpeed);
         println(sketch.ySpeed);
     switch(key) {
@@ -127,12 +135,14 @@ void draw()  {
       break;
       // adjust trace speed
     case 'z':
-      sketch.traceSpeed -= 0.1;
+      sketch.traceSpeed -= incFactor;
       if (sketch.traceSpeed < 0)
         sketch.traceSpeed = 0;
       break;
     case 'x':
-      sketch.traceSpeed += 0.1;
+      sketch.traceSpeed += incFactor;
+     if (sketch.traceSpeed > 100)
+        sketch.traceSpeed = 100;
       break;
     }
 
@@ -158,6 +168,10 @@ void keyPressed() {
     break;
   case '0':
     sketch.clearLayers();
+    break;
+  case 'n':
+    interlaceColumns = !interlaceColumns;
+    println(interlaceColumns);
     break;
   case RETURN:
   case ENTER:
