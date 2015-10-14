@@ -27,7 +27,7 @@ class GlowdomeRender {
     PGraphics offscreenBuffer;
 
     PImage currentImage;
-    boolean autoCycle = false;
+    boolean autoCycle = true;
 
     File [] imageFiles;
     int currentImageNum;
@@ -51,6 +51,7 @@ class GlowdomeRender {
     int lastMillis = millis();
     int cycleMillis = millis();  // the last time the image was cycled
     int handsMillis = millis();
+    int curMillis = millis();
 
     float imageTrace = 0;  // which column of pixels we are currently sending to the strips
     float traceSpeed = 1;  // how many pixels to skip each frame, adjust for motor speed
@@ -77,7 +78,9 @@ class GlowdomeRender {
     float a = 0;
     
     PVector prevAverage;
-    PVector handsDelta;   
+    PVector handsDelta;
+ 
+   int columnsPerSecond = 1;
     
     GlowdomeRender(PApplet applet, boolean kinect, boolean leap) {
         useKinect = kinect;
@@ -187,6 +190,7 @@ class GlowdomeRender {
     }
 
     public void cycleImage(Integer dir) {
+        cycleMillis = curMillis;
         currentImageNum+=dir;
 
         if (currentImageNum > imageFiles.length - 1) {
@@ -199,14 +203,14 @@ class GlowdomeRender {
         
         println(imageFiles[currentImageNum]);
         
-        if(!imageFiles[currentImageNum].isDirectory()) {
+        if(!imageFiles[currentImageNum].isDirectory() 
+          && imageFiles[currentImageNum].exists()
+          && imageFiles[currentImageNum].getName().matches("(?i).*(jpg|png|jpeg)$")
+        ) {
             sourceImage = loadImage(imageFiles[currentImageNum].getAbsolutePath());            
         } else { 
             cycleImage(2 * dir);
-        }
-        
-        loadImages();
-        
+        }        
     }
 
     public void loadMovie(PApplet sketch) {
@@ -304,6 +308,7 @@ class GlowdomeRender {
      */
     void renderPicture(PVector [] hands) {
 
+        
         float xScale, yScale;
         float xPix, yPix;
         float xSrc, ySrc;
@@ -320,13 +325,11 @@ class GlowdomeRender {
 
         boolean xSquare, ySquare;
 
-        int curMillis = millis();
+        curMillis = millis();
         
-//        if (autoCycle && curMillis - cycleMillis > 1000) {
-//            cycleImage(1);
-        if (curMillis - cycleMillis > slideshowDelay) {
-           cycleImage(1);
-            cycleMillis = curMillis; 
+        if (autoCycle && curMillis - cycleMillis > slideshowDelay) {
+          loadImages();         
+          cycleImage(1);
         }
 
         colorMode(HSB, 255);
@@ -458,8 +461,8 @@ class GlowdomeRender {
     void renderConsole() {
         textFont(font20);
         textSize(20);
+        text(traceSpeed + " position: " + xCycle + "\n" + imageFiles[currentImageNum].getName(), 20, height - 30);
         fill(255, 0, 0);
-        text("trace " + traceSpeed + " xCycle " + xCycle, 20, height - 30);
     }
 
     /**
@@ -513,6 +516,8 @@ class GlowdomeRender {
         // Draw the image
         //image(kinectImage,0,0, width, height);
         blend(kinectImage, 0, 0, 640, 480, 0, 0, width, height, LIGHTEST);
+        colorMode(RGB, 255);
+
     }
 
     void renderPointCloud() {
@@ -620,9 +625,9 @@ class GlowdomeRender {
         Read the current column of pixels from the final image, send to pixelpusher
      */
     void display() {
-
+        
         color c;
-
+        
         if (testObserver.hasStrips) {
             int stripNum = 0;
             List<Strip> strips = registry.getStrips();
@@ -635,38 +640,47 @@ class GlowdomeRender {
                     yscale = height / stripLength;
                     //println(stripNum);
                     for (int stripY = 0; stripY < stripLength; stripY++) {
-c  = 0;
+                        c  = 0;
                         // interlace the pixel between the strips
+                        
                         if (stripY % 2 == stripNum) {  // even led
                             c = get((int)imageTrace, stripY*yscale);
                             //c = offscreenBuffer.pixels[(int)imageTrace + stripY*yscale*width];
                             //c = color(255,0,0);
                         } else {    // odd led
-                            c = get((int)imageTrace, stripY*yscale + 1);
+                            if(interlaceColumns) {
+                              c = get((int)imageTrace, stripY*yscale + 1);
+                            } else {
+                              c = get((int)imageTrace, stripY*yscale);                            
+                            }
                             //c = offscreenBuffer.pixels[(int)imageTrace + ((int)(stripY*yscale) + 1)*width];
                             //println(stripY*yscale*width);
                         }
-                        //print(c);
-
-//                        Thread.sleep(1000);
                         strip.setPixel(c, stripLength - stripY);
                     }
                     stripNum++;
                 }
             }
         }
+                
+        // SKIPS PIXELS
         imageTrace += traceSpeed;
-
+        
         if (imageTrace > width - 1) imageTrace = imageTrace - width;
 
         // check for cycle going beyond the image
-        xCycle += xSpeed;
+        xCycle += traceSpeed;
         if (xCycle < 0) xCycle = width + xCycle;
         if (xCycle > width) xCycle = xCycle - width;
 
-        yCycle += ySpeed;
+        //yCycle += traceSpeed;
         if (yCycle < 0) yCycle = height + yCycle;
         if (yCycle > height) yCycle = yCycle - height;
+        
+        if (xCycle == 1) {
+          println("ROTATION: " + millis());
+        }
+
     }
 
     /**
