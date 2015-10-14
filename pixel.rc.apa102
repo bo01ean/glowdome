@@ -1,0 +1,11 @@
+strip1=apa102
+start1=00fe21
+order1=rbg
+strip2=apa102
+start2=cafe21
+order2=rbg
+stripsattached=2
+pixels=360
+blank_strips_on_idle=0
+#turbo_mode=16
+copy=2

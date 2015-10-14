@@ -625,17 +625,24 @@ class GlowdomeRender {
         Read the current column of pixels from the final image, send to pixelpusher
      */
     void display() {
-        
         color c;
-        
+                
         if (testObserver.hasStrips) {
             int stripNum = 0;
             List<Strip> strips = registry.getStrips();
 
             if (strips.size() > 0) {
                 int yscale = height / strips.size();
-                for(Strip strip : strips) {
-                    int stripLength = strip.getLength();
+                
+                
+//                for(Strip strip : strips) {
+                Strip strip = strips.get(0);
+                //if(numStripsOverride == 1) {
+                //    strip = strips.get(0);
+                //}
+
+
+                  int stripLength = strip.getLength();
                     int xscale = width / stripLength;
                     yscale = height / stripLength;
                     //println(stripNum);
@@ -659,7 +666,7 @@ class GlowdomeRender {
                         strip.setPixel(c, stripLength - stripY);
                     }
                     stripNum++;
-                }
+                //}
             }
         }
                 
@@ -678,7 +685,9 @@ class GlowdomeRender {
         if (yCycle > height) yCycle = yCycle - height;
         
         if (xCycle == 1) {
-          println("ROTATION: " + millis());
+          println("ROTATION:" + millis() + " Elapsed: " + (millis() - last));
+                  last = millis();
+        
         }
 
     }
