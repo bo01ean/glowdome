@@ -67,7 +67,7 @@ boolean useLeap = true;
 boolean interlaceColumns = false;
 
 int numStripsOverride = 1;
-float RPS = 5;//60 FPS
+float RPS = 1;//60 FPS
 float frameRateVal = RPS * 60;
 int last = 0;
 float incFactor = 3;
