@@ -673,10 +673,22 @@ class GlowdomeRender {
         // SKIPS PIXELS
         imageTrace += traceSpeed;
         
+        println(xSpeed);
+        //print(", ");
+        //println(ySpeed);
+
+        
         if (imageTrace > width - 1) imageTrace = imageTrace - width;
 
         // check for cycle going beyond the image
-        xCycle += traceSpeed;
+
+        
+        
+        if(xSpeed > 0) {
+            xCycle += (int) xSpeed * 1;
+        } else {          
+           xCycle += traceSpeed;
+        }
         if (xCycle < 0) xCycle = width + xCycle;
         if (xCycle > width) xCycle = xCycle - width;
 
