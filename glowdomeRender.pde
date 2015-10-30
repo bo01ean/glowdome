@@ -155,7 +155,7 @@ class GlowdomeRender {
         
         gd3d = new Glowdome3d();
         gd3d.setup(thisApplet);
-        loadImages();
+        readImagesFromDir();
     }
     
     public void setupFonts() {
@@ -172,7 +172,7 @@ class GlowdomeRender {
     /**
      *   Create an array of image file names
      */
-    private void loadImages() {
+    private void readImagesFromDir() {
         String path = sketchPath+"/data/"; 
         imageFiles = listFiles(path);
     }
@@ -255,7 +255,7 @@ class GlowdomeRender {
         }
 
         if ((handsDelta.x > 0 || handsDelta.y > 0) && handsMillis - millis() < 2000) {
-          xSpeed = handsDelta.x;
+          xSpeed = -1 * handsDelta.x;
           ySpeed = handsDelta.y;
           handsMillis = millis();
         }
@@ -328,7 +328,7 @@ class GlowdomeRender {
         curMillis = millis();
         
         if (autoCycle && curMillis - cycleMillis > slideshowDelay) {
-          loadImages();         
+          readImagesFromDir();         
           cycleImage(1);
         }
 
@@ -646,6 +646,9 @@ class GlowdomeRender {
                     int xscale = width / stripLength;
                     yscale = height / stripLength;
                     //println(stripNum);
+                    
+                    //LET's DUPE IMAGE ON XXXXXX
+                    
                     for (int stripY = 0; stripY < stripLength; stripY++) {
                         c  = 0;
                         // interlace the pixel between the strips
@@ -673,35 +676,31 @@ class GlowdomeRender {
         // SKIPS PIXELS
         imageTrace += traceSpeed;
         
-        println(xSpeed);
-        //print(", ");
-        //println(ySpeed);
-
-        
         if (imageTrace > width - 1) imageTrace = imageTrace - width;
 
         // check for cycle going beyond the image
 
-        
-        
-        if(xSpeed > 0) {
-            xCycle += (int) xSpeed * 1;
-        } else {          
-           xCycle += traceSpeed;
-        }
+
+        //plug in leap coords
+        xCycle += xSpeed;
+
         if (xCycle < 0) xCycle = width + xCycle;
         if (xCycle > width) xCycle = xCycle - width;
 
-        //yCycle += traceSpeed;
+        //plug in leap coords          
+        yCycle += ySpeed;
+        //set mins maxes
         if (yCycle < 0) yCycle = height + yCycle;
         if (yCycle > height) yCycle = yCycle - height;
         
-        if (xCycle == 1) {
+        if ((int)xCycle == 1) {
           println("ROTATION:" + millis() + " Elapsed: " + (millis() - last));
                   last = millis();
         
+        } else {
+         // print("xCycle:" + xCycle);
+         // println(" xSpeed:" + xSpeed);
         }
-
     }
 
     /**
@@ -754,7 +753,6 @@ class GlowdomeRender {
         }
         handsDelta.x = xDelta;
         handsDelta.y = yDelta;
-      
     }
 
     // These functions come from: http://graphics.stanford.edu/~mdfisher/Kinect.html
