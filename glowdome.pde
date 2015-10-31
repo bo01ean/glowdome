@@ -61,13 +61,15 @@ GlowdomeRender sketch;
 
 Serial rpmReader;
 
+boolean readSerial = false;
+
 boolean useKinect = false;
 boolean useLeap = true;
 
 boolean interlaceColumns = false;
 
 int numStripsOverride = 1;
-float RPS = 2;//60 FPS
+float RPS = 1;//60 FPS
 float frameRateVal = RPS * 60;
 int last = 0;
 float incFactor = 3;
@@ -88,15 +90,23 @@ void setup() {
   int stripsHeight = 360;
   
   size(stripsHeight/5, stripsHeight, P3D);
-  frameRate(frameRateVal);
+  frameRate(100);
 
   sketch = new GlowdomeRender(this, useKinect, useLeap);
   sketch.setup();
-
-  println(Serial.list());
-
-  if (Serial.list().length > 6) {  
-    //rpmReader = new Serial(this, 1Serial.list()[Serial.list().length-1], 152000);
+  //println(Serial.list());
+    // check for port
+    if(readSerial) {
+      String[] serialList = Serial.list();
+      for(int i =0; i< serialList.length; i++) {
+        println(serialList[i]);
+          String results[] = match(serialList[i], "cu");
+          
+          if(results != null) {   
+            rpmReader = new Serial(this, "/dev/cu.usbmodem1059031", 9600);
+            rpmReader.bufferUntil(lf);        
+          }
+      }
   }
 }
 
@@ -224,14 +234,9 @@ void leapOnSwipeGesture(SwipeGesture g, int state) {
 void serialEvent(Serial rpmReader) {
   arduinoData = trim(rpmReader.readStringUntil(lf));
   if (arduinoData != null) {
-    print("In:");
+    print("RPM FROM ARDUINO:");
     println(arduinoData);
-    String[] results = match(arduinoData, "\\d\\.\\d+");
-    if (results != null) {  
-      //float f = Float.parseFloat(arduinoData);
-      //println(f);
-      //frameRate(f);
-    }
+    frameRate(Integer.parseInt(arduinoData));
   }
 }
 
