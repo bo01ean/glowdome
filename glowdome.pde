@@ -61,7 +61,7 @@ GlowdomeRender sketch;
 
 Serial rpmReader;
 
-boolean readSerial = false;
+boolean readSerial = true;
 
 boolean useKinect = false;
 boolean useLeap = true;
