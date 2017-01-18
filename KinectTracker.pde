@@ -20,12 +20,12 @@ class KinectTracker {
   PImage display;
 
   KinectTracker() {
-    kinect.start();
-    kinect.enableDepth(true);
+    //kinect.start();
+    //kinect.enableDepth(true);
 
     // We could skip processing the grayscale image for efficiency
     // but this example is just demonstrating everything
-    kinect.processDepthImage(true);
+    //kinect.processDepthImage(true);
 
     display = createImage(kw,kh,PConstants.RGB);
 
@@ -36,7 +36,7 @@ class KinectTracker {
   void track() {
 
     // Get the raw depth as array of integers
-    depth = kinect.getRawDepth();
+    //depth = kinect.getRawDepth();
 
     // Being overly cautious here
     if (depth == null) return;
@@ -79,7 +79,7 @@ class KinectTracker {
   }
 
   void display() {
-    PImage img = kinect.getDepthImage();
+    PImage img = null;// = kinect.getDepthImage();
 
     // Being overly cautious here
     if (depth == null || img == null) return;
@@ -111,7 +111,7 @@ class KinectTracker {
   }
 
   void quit() {
-    kinect.quit();
+    //kinect.quit();
   }
 
   int getThreshold() {

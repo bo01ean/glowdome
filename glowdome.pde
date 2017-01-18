@@ -42,7 +42,7 @@ import com.heroicrobot.dropbit.registry.*;
 import com.heroicrobot.dropbit.devices.pixelpusher.Pixel;
 import com.heroicrobot.dropbit.devices.pixelpusher.Strip;
 
-import de.voidplus.leapmotion.*;
+//import de.voidplus.leapmotion.*;
 
 import java.util.*;
 
@@ -51,7 +51,7 @@ import processing.serial.*;
 String arduinoData = null;  
 int lf = 10;    // Linefeed in ASCII
 
-Kinect kinect;
+//Kinect kinect;
 
 float speedIncrement = 1;
 
@@ -207,7 +207,7 @@ void stop() {
   super.stop();
 }
 
-
+/*
 void leapOnSwipeGesture(SwipeGesture g, int state) {
   int     id                  = g.getId();
   Finger  finger              = g.getFinger();
@@ -229,7 +229,7 @@ void leapOnSwipeGesture(SwipeGesture g, int state) {
     break;
   }
 }
-
+*/
 
 int newFrameRate = 0;
 

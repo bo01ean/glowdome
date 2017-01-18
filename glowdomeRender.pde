@@ -1,8 +1,8 @@
 import processing.core.PVector;
 import processing.video.*;
 
-import org.openkinect.*;
-import org.openkinect.processing.*;
+//import org.openkinect.*;
+//import org.openkinect.processing.*;
 
 
 
@@ -14,9 +14,9 @@ class GlowdomeRender {
     boolean useKinect;
     boolean useLeap;
 
-    KinectTracker tracker;
+//    KinectTracker tracker;
 
-    LeapMotion leap;
+    //LeapMotion leap;
 
     PApplet thisApplet;
 
@@ -129,22 +129,22 @@ class GlowdomeRender {
 
 
         backgroundImage = createImage(width, height, RGB);
-        kinectImage = createImage(kw, kh, RGB);
+        //kinectImage = createImage(kw, kh, RGB);
         sourceImage = loadImage("had001.png");
 
         offscreenBuffer = createGraphics(width, height, JAVA2D);
 
         if (useLeap) {
-            leap = new LeapMotion(thisApplet).withGestures();
+            //leap = new LeapMotion(thisApplet).withGestures();
         }
 
         if (useKinect) {
-            kinect = new Kinect(thisApplet);
-            tracker = new KinectTracker();
-            kinect.enableDepth(true);
+            //kinect = new Kinect(thisApplet);
+            //tracker = new KinectTracker();
+            //kinect.enableDepth(true);
             // We don't need the grayscale image in this example
             // so this makes it more efficient
-            kinect.processDepthImage(false);
+            //kinect.processDepthImage(false);
 
             // Lookup table for all possible depth values (0 - 2047)
             for (int i = 0; i < depthLookUp.length; i++) {
@@ -166,7 +166,7 @@ class GlowdomeRender {
 
     public void stop() {
         if (useKinect) {
-            tracker.quit();
+            //tracker.quit();
         }
     }
 
@@ -227,7 +227,7 @@ class GlowdomeRender {
         PVector [] leapVectors;
 
         if (useKinect) {
-            kinectVector = tracker.getPos();
+            //kinectVector = tracker.getPos();
         } else {
             kinectVector = new PVector(0, 0);
         }
@@ -236,7 +236,7 @@ class GlowdomeRender {
         int numHands = 0;
         leapVectors = new PVector[2];
         
-        if (useLeap) {
+        /*if (useLeap) {
             for (Hand hand : leap.getHands()) {
                 leapVectors[handHum++] = hand.getStabilizedPosition();
                 numHands++;
@@ -250,9 +250,9 @@ class GlowdomeRender {
                ySpeed = 0;
             }
             updateDeltaVector(leapVectors);
-        } else {
+        } else {*/
           leapVectors[0] = new PVector(0,0);
-        }
+        //}
 
         if ((handsDelta.x > 0 || handsDelta.y > 0) && handsMillis - millis() < 2000) {
           xSpeed = -1 * handsDelta.x;
@@ -265,7 +265,7 @@ class GlowdomeRender {
         int currentLayer;
         
         if (useKinect) {
-          tracker.track();
+          //tracker.track();
         }
 
         for (currentLayer=0; currentLayer <= numModes; currentLayer++) {
@@ -275,10 +275,10 @@ class GlowdomeRender {
                         renderPicture(leapVectors);
                         break;
                     case 2:
-                        renderTest(kinectVector);
+                        //renderTest(kinectVector);
                         break;
                     case 3:
-                        renderNoise(kinectVector, leapVectors);
+                        //renderNoise(kinectVector, leapVectors);
                         break;
                     case 4:
                         renderPointCloud();
@@ -471,7 +471,7 @@ class GlowdomeRender {
     void renderKinect() {
         if (!useKinect) return;
 
-        PImage img = kinect.getVideoImage();
+        PImage img = null;// kinect.getVideoImage();
 
         kinectImage.loadPixels();
 
@@ -482,17 +482,17 @@ class GlowdomeRender {
                 // mirroring image
                 int offset = kw-x-1+y*kw;
                 // Raw depth
-                int rawDepth = tracker.depth[offset];
+                //int rawDepth = tracker.depth[offset];
 
-                avgDepth += rawDepth;
+                //avgDepth += rawDepth;
 
                 int pix = x+y*kinectImage.width;
-                if (rawDepth < threshold) {
+                //if (rawDepth < threshold) {
                     //colourful twin
-                    colorMode (HSB);
-                    kinectImage.pixels[pix] = color(rawDepth % 360, 250, 150);
+                //    colorMode (HSB);
+                //    kinectImage.pixels[pix] = color(rawDepth % 360, 250, 150);
                     //println (rawDepth);
-                } else {
+                //} else {
                     //creating the mirrored world
                     colorMode (RGB);
                     float r = red (img.pixels[pix]);
@@ -501,7 +501,7 @@ class GlowdomeRender {
 
                     color c = color (r, g, b);
                     kinectImage.pixels[pix] = c;
-                }
+                //}
             }
         }
         kinectImage.updatePixels();
@@ -529,7 +529,7 @@ class GlowdomeRender {
         //text("Kinect FR: " + (int)kinect.getDepthFPS() + "\nProcessing FR: " + (int)frameRate,10,16);
 
         // Get the raw depth as array of integers
-        int[] depth = kinect.getRawDepth();
+        //int[] depth = kinect.getRawDepth();
 
         // We're just going to calculate and draw every 4th pixel (equivalent of 160x120)
         int skip = 3;
