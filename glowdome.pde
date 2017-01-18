@@ -35,8 +35,8 @@
  */
 
 
-import org.openkinect.*;
-import org.openkinect.processing.*;
+//import org.openkinect.*;
+//import org.openkinect.processing.*;
 
 import com.heroicrobot.dropbit.registry.*;
 import com.heroicrobot.dropbit.devices.pixelpusher.Pixel;
@@ -77,9 +77,9 @@ float incFactor = 3;
 class TestObserver implements Observer {
   public boolean hasStrips = false;
   public void update(Observable registry, Object updatedDevice) {
-    println("Registry changed!");
+    //println("Registry changed!");
     if (updatedDevice != null) {
-      println("Device change: " + updatedDevice);
+      //println("Device change: " + updatedDevice);
     }
     this.hasStrips = true;
   }
@@ -87,10 +87,10 @@ class TestObserver implements Observer {
 
 
 void setup() {
-  int stripsHeight = 360;
+  int stripsHeight = 720;
   
   size(stripsHeight/5, stripsHeight, P3D);
-  frameRate(100);
+  frameRate(120);
 
   sketch = new GlowdomeRender(this, useKinect, useLeap);
   sketch.setup();
@@ -100,11 +100,12 @@ void setup() {
       String[] serialList = Serial.list();
       for(int i =0; i< serialList.length; i++) {
         println(serialList[i]);
-          String results[] = match(serialList[i], "cu");
+          String results[] = match(serialList[i], "cu\\.usbmodem1059031");
           
           if(results != null) {   
             rpmReader = new Serial(this, "/dev/cu.usbmodem1059031", 9600);
-            rpmReader.bufferUntil(lf);        
+            rpmReader.bufferUntil(lf);
+            rpmReader.bufferUntil('\n');        
           }
       }
   }
@@ -230,13 +231,22 @@ void leapOnSwipeGesture(SwipeGesture g, int state) {
 }
 
 
+int newFrameRate = 0;
 
-void serialEvent(Serial rpmReader) {
-  arduinoData = trim(rpmReader.readStringUntil(lf));
-  if (arduinoData != null) {
-    print("RPM FROM ARDUINO:");
-    println(arduinoData);
-    frameRate(Integer.parseInt(arduinoData));
+void serialEvent(Serial teensy) {
+  try {
+    arduinoData = trim(teensy.readStringUntil(lf));
+    if (arduinoData != null) {
+      //println(Integer.parseInt(arduinoData));
+      String[] m = match(arduinoData, " \\(smoothed\\): ([0-9.]+)");
+      println("RPM FROM ARDUINO: " + arduinoData);
+      newFrameRate = Integer.parseInt(m[1]) * 1;
+      println("Setting Framerate to: '" + newFrameRate + "'.");
+      frameRate(newFrameRate);
+      
+    }
+  } catch (Exception e) {
+    //println("Noooooo");
   }
 }
 

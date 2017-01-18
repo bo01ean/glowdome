@@ -57,7 +57,7 @@ class GlowdomeRender {
     float traceSpeed = 1;  // how many pixels to skip each frame, adjust for motor speed
 
     int stripeWidth = 10;
-    int slideshowDelay = 15000;
+    int slideshowDelay = 10000;
 
     int saturationAdjust = 0;
     int hueShift;
@@ -103,6 +103,7 @@ class GlowdomeRender {
         colorMode(RGB, 255);
 
         registry = new DeviceRegistry();
+        registry.setOverallBrightnessScale(.25);
         testObserver = new TestObserver();
         registry.addObserver(testObserver);
         
@@ -178,7 +179,6 @@ class GlowdomeRender {
     }
 
     public File[] listFiles(String dir) {
-      println(dir);
      File file = new File(dir);
      if (file.isDirectory()) {
        File[] files = file.listFiles();
@@ -492,8 +492,7 @@ class GlowdomeRender {
                     colorMode (HSB);
                     kinectImage.pixels[pix] = color(rawDepth % 360, 250, 150);
                     //println (rawDepth);
-                }
-                else {
+                } else {
                     //creating the mirrored world
                     colorMode (RGB);
                     float r = red (img.pixels[pix]);
@@ -694,7 +693,8 @@ class GlowdomeRender {
         if (yCycle > height) yCycle = yCycle - height;
         
         if ((int)xCycle == 1) {
-          println("ROTATION:" + millis() + " Elapsed: " + (millis() - last));
+          println("ROTATION:" + (millis() / 1000) + " Elapsed: " + (millis() - last) + " RPM: " + (60.0 / (millis() - last)) * 1000.0);
+          // (60.0 / value) * 1000
                   last = millis();
         
         } else {
